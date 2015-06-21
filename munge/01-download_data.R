@@ -4,7 +4,7 @@
 
 # Les métadonnées sont contenues dans un fichier JSON
 
-Sys.setlocale("LC_ALL", "C")
+# Sys.setlocale("LC_ALL", "fr_CA.UTF-8")
 
 url <- "http://ouvert.canada.ca/data/api/action/package_show?id=40f57c8a-58a9-47c8-b9ff-2e3090044137"
 json.data <- fromJSON(url, simplifyDataFrame = TRUE)
@@ -20,13 +20,13 @@ dt <- df.json %>%
 
 write.csv(dt, "./data/liste.fichiers.csv")
 
-# On attribue le chemin ./doc pour la documentation et ./data pour les csv
+# On attribue le chemin ./doc/ pour la documentation et ./data/raw/ pour les csv
 # en se servant des propriétés de fusion de tableau de data.table
 
 dt <- data.table(dt)
 setkey(dt, format)
 
-dt.temp <- data.table(format = c("csv", "html"), chemin = c("./data/original/", "./doc/"))
+dt.temp <- data.table(format = c("csv", "html"), chemin = c("./data/raw/", "./doc/"))
 setkey(dt.temp, format)
 
 dt <- dt.temp[dt]
@@ -40,12 +40,12 @@ d_ply(dt[dt$language == "eng"], "url", function(x) {
 }
 )
 
+# Effacer ce qui suit? Est-ce encore utile?
 
-
-dt <- data.table(
-  df2 <- df %>%
-    select(language, url, nom.fichier) %>%
-    filter(language == "eng")
-  )
-
+# dt <- data.table(
+#   df2 <- df %>%
+#     select(language, url, nom.fichier) %>%
+#     filter(language == "eng")
+#   )
+# 
 
