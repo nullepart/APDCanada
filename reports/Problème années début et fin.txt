@@ -1,0 +1,23 @@
+How to automatize the coding of start or end years in a dataframe, possibly using dplyr's anti-joins or data.table?
+
+I have a table of about 50,000 lines listing multi-year projects identified by a unique number and their yearly disbursements. After some tinkering, the table is now tidy. The problem is that my table is partial: it captures data between 2006 and 2010, but some projects begun earlier than 2006, and some ended after 2010. I would like to code, for each project, the years of beginning and end inasmuch as I can derive this information from existing data, and code NA when I cannot assess it.
+
+So I have four generic cases (shown in the table below):
+- projects that started after 2006 and ended before 2010, for which budget information is entirely captured in the table (in my example table: projects "B" and "C");
+- projects that started before (or in**) 2006 but ended before 2010, for which budget information is partially captured by the table (open-ended on the left) (project "A");
+- projects that started after 2006 but ended after (or in**) 2010 (open-ended on the right) (project "D"); and
+- projects that started before (or in) 2006 and ended after (or in) 2010 (project "E").
+
+** 2006 and 2010 are special cases: since we don't have data for the years 2005 and 2011, respectively, with which to compare them, we cannot know whether a project started/ended on that year or continued outside of the period for which we have data. Hence, I would code them NA as well.
+
+
+The code below generates the kind of table that I have.
+
+
+Coding the start year for all projects for which there is data in 2006 and the end year for all those for which there is in 2010 is easy. What is complicated is determining, for all other projects, when they are 
+
+
+
+
+
+

@@ -1,0 +1,31 @@
+---
+title: "Tendances en Afrique"
+author: "FP"
+date: "5 novembre 2015"
+output: html_document
+---
+
+``` {r startup, message=F}
+require(ProjectTemplate)
+if(basename(getwd()) == "src") setwd("..")
+load.project()
+options(scipen=11)
+```
+# Exploration des tendances de l'aide canadienne en Afrique
+
+## Évolution des modalités de l'aide
+```{r PREP
+afr <- apd %>% select(division.ID == "D4207" | division.ID == "D4270")
+}
+```
+
+
+
+
+
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

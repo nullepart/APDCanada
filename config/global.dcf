@@ -1,11 +1,11 @@
-version: 0.6
+version: 0.6-1
 data_loading: TRUE
 cache_loading: TRUE
 recursive_loading: FALSE
-munging: TRUE
+munging: FALSE
 logging: FALSE
 load_libraries: TRUE
-libraries: reshape2, plyr, dplyr, ggplot2, stringr, tidyr, jsonlite
+libraries: jsonlite, reshape2, ggplot2, plyr, stringr, tidyr, dplyr
 as_factors: FALSE
 data_tables: TRUE
 attach_internal_libraries: TRUE
