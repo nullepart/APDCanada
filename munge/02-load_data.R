@@ -58,12 +58,16 @@ apd <- apd %>% mutate(FY = as.numeric(str_sub(FY, start = -4))) %>%
         mutate(Sector.percent = as.numeric(extract_numeric(Sector.percent))/100) %>% 
         mutate(Amount.spent = as.numeric(extract_numeric(Amount.spent)))
 
+# Nettoyage
+rm(list = c("mypath", "noms.apd.nouv", "noms.apd.orig"))
+
 # On met extrait les secteurs du tableau apd pour les mettre
 # dans sect
 sect.var <- c("Sector.ID", "Sector.name")
-sect <- apd %>% select(one_of(themes.var)) %>%
+sect <- apd %>% select(one_of(sect.var)) %>%
         unique(by = "Sector.ID") %>%
         arrange(Sector.ID)
+setkey(sect, "Sector.ID")
 
 # Même chose avec les pays
 
@@ -73,15 +77,21 @@ pays.var <- c("Continent.ID", "Continent.name", "Country.region.ID",
 pays <- apd %>% select(one_of(pays.var)) %>% 
         unique(by = c("Project.Browser.country.ID")) %>%
         arrange(Country.region.name)
+setkey(pays, "Project.Browser.country.ID")
 
-# Même chose avec les organisations,
-
+# Même chose avec les organisations
 org.var <- c("Org.ID", "Org.name", 
              "Org.type.location.profit.not.for.profit", "Org.class", "Org.sub.class")
 org <- apd %>% select(one_of(c("FY", "No", org.var))) %>% 
         group_by(No, FY, Org.ID) %>% 
-        unique(by = Org.ID) %>%
+        unique(by = "Org.ID") %>%
         arrange(Org.ID)
+org <- org %>% separate(Org.type.location.profit.not.for.profit, c("Origine", "Type"), sep = " ", extra = "drop", fill = "warn")
+
+org[Origine == "Uncoded", Origine := NA]
+org[Org.class == "Unknown", Org.class := NA]
+org[Org.sub.class == "Unknown", Org.sub.class := NA]
+setkey(org, "No")
 
 # Même chose avec les projets
 
@@ -93,8 +103,19 @@ proj <- apd %>% select(one_of(c("FY", "No", proj.var))) %>%
         arrange(No, FY)
 
 # On rajoute une année de début et une année de fin à chaque projet
-duree <- df %>% group_by(project) %>% summarise(start = min(y), end = max(y))
+duree <- proj %>% group_by(No) %>% summarise(debut = min(FY), fin = max(FY))
+
+# Comme il est impossible de savoir si un projet a bien commencé en 2006 ou s'est
+# bien terminé en 2013, on exclut ces années du calcul de la durée.
+duree[debut == 2006, "debut"] <- NA
+duree[fin == 2013, "fin"] <- NA
+duree <- duree %>% mutate(annees = (fin - debut + 1))
+temp <- !is.na(duree$annees)
+duree <- duree[temp]
+
 
 # Sauvegarder dans un fichier binaire
+save(apd, duree, liste, org, pays, proj, sect, compress = T, file = "./data/donnees.RData")
 
-save(apd, org, org.no, pays, proj, compress = T, sect, file = "./data/donnees.RData")
+# Nettoyage
+rm(list = c("org.var", "pays.var", "proj.var", "sect.var", "temp", "liste", "multmerge"))

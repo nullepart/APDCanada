@@ -315,3 +315,37 @@ dfSummary <- dfSummary %>% mutate(df)
 ###########
 library('devtools')
 install_github('ProjectTemplate', username = 'johnmyleswhite')
+
+###########
+test <- "Canadian Non-Profit Making"
+z <- str_split(test, " ")
+str(z)
+
+# Façon peu élégante de convertir la liste en df
+temp <- org[1:10,]
+names(temp)
+names(temp)[5] <- "Type"
+z <- str_split(temp$Type, " ")
+View(transpose(as.data.frame(z))) # et après on extrait
+
+# Autre manière: en utilisant lapply ou plyr
+
+ddply(temp, .(Type), .(id), mutate, location = str_split(pattern = " "))
+
+test_orig <- 
+        
+        temp %>% str_split(Org.type.location.profit.not.for.profit, " ")
+
+
+
+extrait_origine <- function(z){
+        str_split(z)[[1]][1]
+}
+lapply(X = z, function )
+
+org2 <- org[1:20, ]
+org2 %>% 
+        separate(org2, Org.type.location.profit.not.for.profit, c("Origine", "Type", "Rien"), sep = " ", extra = "drop", fill = "warn")
+
+
+
