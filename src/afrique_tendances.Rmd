@@ -1,7 +1,7 @@
 ---
-title: "Tendances en Afrique"
-author: "FP"
-date: "5 novembre 2015"
+title: "Profil des projets des directions géographiques de Affaires mondiales Canada"
+author: "François-Philippe Dubé"
+date: "15 décembre 2015"
 output: html_document
 ---
 
@@ -13,19 +13,99 @@ options(scipen=11)
 ```
 # Exploration des tendances de l'aide canadienne en Afrique
 
+## Distribution de l'aide par direction générale
+```{r}
+df <- proj %>% select(FY, No, Branch.name, Branch.ID, Amount.spent) %>% group_by(Branch.name, FY) %>% summarize(Total = sum(Amount.spent)) %>% arrange(desc(Total)) 
+df$Branch.id<- c("KFM Partenariat", "MFM Enjeux mondiaux", "Géographiques")
+
+# On consolide les directions générales géographiques et on exclut 
+# le Bureau de la gouvernance géographique et la DG des Politiques (PFM)
+
+df_simple <- df %>% group_by(Branch.name) %>% summarise(Total = sum(Total)/1e06)
+df_simple <- df_simple %>% rbind(data.frame(Branch.name = "Geos", Total = sum(df_simple[c(2:4, 6, 7, 9), Total]))) %>% filter(Branch.name %in% c("Geos", "MFM Global Issues and Development", "KFM Partnership for Develop. Innovation")) 
+df_simple$`Direction generale` <- c("KFM Partenariat", "MFM Enjeux mondiaux", "Géographiques")
+        
+g <- ggplot(df_simple, aes(x = factor(Branch.name), y = Total))
+ggplot(df, aes(x = factor(Branch.name), y = Total)) + geom_bar(stat = "identity", position = "stack") +  theme(axis.text.x = element_text(angle=90))
+
+# À faire:  il faudrait un diagramme de fréquence pour la distribution des budgets par année pour chaque DG
+
+```
+
+# Questions centrées sur les programmes géographiques
+Tous les programmes géographiques ont un numéro de centre financier compris entre 3000 et 5000.
+
+```{r prep_tableaux_geo}
+geoProj <- proj %>% 
+        filter(3000 < Fund.centre.ID & Fund.centre.ID < 5000) %>%
+        group_by(No) %>%
+        mutate(Total = sum(Amount.spent)) %>%
+        unique(by = "No") %>%
+        join(duree) %>%
+        arrange(No) %>%
+        select(No, Budget, Total, PBA.type, annees, debut, fin, everything()) %>%
+        tbl_df()
+
+geoDuree <- geoProj %>% filter(!is.na(annees))
+
+geoProg <- geoProj %>% 
+        group_by(Fund.centre.ID) %>%
+        mutate(Dec.prog = sum(Amount.spent)) %>%
+        select(Fund.centre.ID, Fund.centre.name, Dec.prog,
+               Regional.program,
+               Branch.ID, Branch.name,
+               Division.ID, Division.name, 
+               Section.ID, Section.name) %>%
+        arrange(Dec.prog, desc = T)
+
+```
+
+
+## Comment les budgets des programmes sont-il distribués? Quels sont les plus gros programmes? (Moyenne annuelle des décaissements 2009-2012)
+
+
+
+```{r distrib_budgets_prog}
+
+
+```
+
+
+
+
+## Combien de projets les programmes géographiques ont-il en fonction de leur budget? 
+
+
+
+## Programmes géographiques: durée des projets
+
+
+
+
+```{r duree_projets}
+df <- proj %>% 
+        filter(3000 < Fund.centre.ID & Fund.centre.ID < 5000) %>%
+        group_by(No) %>%
+        mutate(Total = sum(Amount.spent)) %>%
+        unique(by = "No") %>%
+        join(duree) %>%
+        filter(!is.na(annees)) %>%
+        arrange(No) %>%
+        select(No, Budget, Total, PBA.type, annees, debut, fin, everything())
+
+g <- ggplot(df, aes(x = PBA.type, y = annees))
+g + geom_boxplot(notch = F) + geom_jitter(alpha=0.4, colour = "blue")
+
+```     
+
+
+
 ## Évolution des modalités de l'aide
-```{r PREP
+```{r PREP}
 afr <- apd %>% select(division.ID == "D4207" | division.ID == "D4270")
-}
+
 ```
 
 
 
 
-
-
-```{r, echo=FALSE}
-plot(cars)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

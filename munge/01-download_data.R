@@ -8,6 +8,7 @@
 url <- "http://ouvert.canada.ca/data/api/action/package_show?id=40f57c8a-58a9-47c8-b9ff-2e3090044137"
 
 # Si le réseau est inaccessible, le reste de ce script ne sera pas exécuté
+#### ATTENTION: CE CODE EST À REVOIR
 
 
 json.data <- fromJSON(url, simplifyDataFrame = TRUE)

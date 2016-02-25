@@ -1,0 +1,5 @@
+Ce qu'il reste à faire:
+
+- Revoir le fichier ./munge/01-download_data.R pour s'assurer que le test de la connexion internetion la vérification de la présence de nouveaux fichiers soit automatique.
+- Revoir le fichier ./munge/02-load_data.R pour voir si la méthode lapply pour charger les fichiers fonctionne.
+

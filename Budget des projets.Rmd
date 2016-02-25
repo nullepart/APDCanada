@@ -1,0 +1,66 @@
+---
+title: Comment les niveaux de délégation influencent-ils le choix des budgets des
+  projets?
+author: "François-Philippe Dubé"
+date: "10 janvier 2016"
+output: html_document
+---
+
+``` {r startup, message=F, echo = F}
+# De manière à utiliser la bibliothèque ProjectTemplate avec knitr
+require(ProjectTemplate)
+if(basename(getwd()) == "src") setwd("..")
+load.project()
+
+options(scipen=11)
+
+require(scales)
+format_fr <- format_format(digits = 11, big.mark = " ", decimal.mark = ",")
+
+```
+
+
+
+
+```{r, echo=FALSE}
+
+td <- proj %>% select(No, Budget) %>% left_join(duree) %>% unique(by = "No")
+pre <- str_sub(td$No, start = c(-3)) == "PRE" # Identifier les phases de conception "PRE"
+td <- td[!pre] # Enlever les "PRE"-phases
+td <- td[!is.na(Budget)]
+
+g <- ggplot(data = td, aes(Budget)) 
+g + geom_histogram(binwidth = 100000) + ylim(0, 150) + xlim(0, 5000000)
+g + geom_histogram(binwidth = 1000) + ylim(0, 150) + xlim(0, 100000)
+g + geom_histogram(aes(y = ..density..)) + geom_density() 
+
+# Niveaux d'autorité:
+# Directeur: 100k
+# Sous-ministre: 3,6 M
+# Ministre: 20 M; plus haut: Conseil du Trésor
+# Cependant, une augmentation du budget de max. 10% peut etre faite.
+
+aut <- (100000, 3600000, 20000000) * 1,1
+
+td1 <- td %>% filter(Budget <= aut[1])
+td2 <- td %>% filter(Budget > aut[1]) %>% filter(Budget <= aut[2])
+td3 <- td %>% filter(Budget > aut[2] & Budget <= aut[3])
+td4 <- td %>% filter(Budget > aut[3])
+
+g1 <- ggplot(data = td1, aes(Budget))
+g1 + geom_histogram(binwidth = 1000) + 
+        geom_vline(xintercept = 15000, colour = "purple") + 
+        scale_x_continuous(labels = format_fr)
+
+g2 <- ggplot(data = td2, aes(Budget))
+g2 + geom_histogram(binwidth = 100000) + 
+        scale_x_continuous(labels = format_fr)
+
+g3 <- ggplot(data = td3, aes(Budget))
+g3 + geom_histogram(binwidth = 100000) +
+        scale_x_continuous(labels = format_fr)
+last_plot() + geom_vline(xintercept = 3360000)
+
+
+```
+
